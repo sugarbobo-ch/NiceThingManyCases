@@ -7,6 +7,7 @@ import {
   Span,
   Grid,
   GridItem,
+  Container,
 } from '@chakra-ui/react';
 
 const BrandStoryContent = () => (
@@ -63,20 +64,22 @@ const BrandStoryContent = () => (
   </>
 );
 
-const BrandStory = () => {
+const BrandStory = ({ id }: { id: string }) => {
   return (
-    <Grid
-      direction="row"
-      p={5}
-      position="relative"
-      templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-    >
-      <BrandStoryContent />
-      <BrandStoryContent />
-      <BrandStoryContent />
-      <BrandStoryContent />
-      <BrandStoryContent />
-    </Grid>
+    <Container py={12} id={id} margin="auto">
+      <Grid
+        direction="row"
+        p={5}
+        position="relative"
+        templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+      >
+        <BrandStoryContent />
+        <BrandStoryContent />
+        <BrandStoryContent />
+        <BrandStoryContent />
+        <BrandStoryContent />
+      </Grid>
+    </Container>
   );
 };
 

@@ -14,6 +14,7 @@ import {
   HoverCard,
   Grid,
   GridItem,
+  Container,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { LuChevronDown } from 'react-icons/lu';
@@ -30,80 +31,77 @@ export default function WithSubnavigation() {
   };
 
   return (
-    <Box>
-      <Flex
-        bg={'gray.100'}
-        color={'gray.800'}
-        minH={'60px'}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={'gray.400'}
-        justifyContent={'center'}
-        align={'center'}
-      >
+    <Box borderBottom={1} borderStyle={'solid'} borderColor={'gray.400'}>
+      <Container margin={'auto'}>
         <Flex
-          flex={{ base: 1 }}
-          justify={{ base: 'center', md: 'space-between' }}
+          color={'gray.800'}
+          width={'100%'}
+          minH={'60px'}
+          py={{ base: 2 }}
+          px={{ base: 4 }}
+          justifyContent={'center'}
           align={'center'}
-          maxW={'6xl'}
-          m={'auto'}
         >
           <Flex
-            flex={{ base: 1, md: 'auto' }}
-            ml={{ base: -2 }}
-            display={{ base: 'flex', md: 'none' }}
-          >
-            {open ? (
-              <CloseButton onClick={onToggle} />
-            ) : (
-              <IconButton
-                variant="ghost"
-                onClick={onToggle}
-                aria-label={'Toggle Navigation'}
-              >
-                <GiHamburgerMenu />
-              </IconButton>
-            )}
-          </Flex>
-          <Flex
             flex={{ base: 1 }}
-            justify={{ base: 'space-between', md: 'left' }}
+            justify={{ base: 'center', md: 'space-between' }}
+            align={'center'}
           >
-            <Text
-              textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-              verticalAlign={'middle'}
-              fontFamily={'heading'}
-              color={'gray.800'}
+            <Flex
+              flex={{ base: 1, md: 'auto' }}
+              ml={{ base: -2 }}
+              display={{ base: 'flex', md: 'none' }}
             >
-              Logo
-            </Text>
-
-            <Flex display={{ base: 'none', md: 'flex' }} ml={10} m="auto">
-              <DesktopNav />
+              {open ? (
+                <CloseButton onClick={onToggle} />
+              ) : (
+                <IconButton
+                  variant="ghost"
+                  onClick={onToggle}
+                  aria-label={'Toggle Navigation'}
+                >
+                  <GiHamburgerMenu />
+                </IconButton>
+              )}
             </Flex>
-
-            <Button
-              fontSize={'sm'}
-              fontWeight={900}
-              variant="solid"
-              p={4}
-              ml={4}
-              borderRadius="full"
-              onClick={handleConsultationClick}
+            <Flex
+              flex={{ base: 1 }}
+              justify={{ base: 'space-between', md: 'left' }}
             >
-              立即諮詢
-            </Button>
+              <Text
+                textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+                verticalAlign={'middle'}
+                fontFamily={'heading'}
+                color={'gray.800'}
+              >
+                Logo
+              </Text>
+
+              <Flex display={{ base: 'none', md: 'flex' }} ml={10} m="auto">
+                <DesktopNav />
+              </Flex>
+
+              <Button
+                fontSize={'md'}
+                fontWeight={900}
+                variant="solid"
+                p={4}
+                ml={4}
+                borderRadius="full"
+                onClick={handleConsultationClick}
+              >
+                立即諮詢
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
 
-      <Collapsible.Root open={open}>
-        <Collapsible.Content>
-          <MobileNav />
-        </Collapsible.Content>
-      </Collapsible.Root>
+        <Collapsible.Root open={open}>
+          <Collapsible.Content>
+            <MobileNav />
+          </Collapsible.Content>
+        </Collapsible.Root>
+      </Container>
     </Box>
   );
 }
@@ -122,7 +120,7 @@ const DesktopNav = () => {
             <HoverCard.Trigger>
               <Box
                 p={2}
-                fontSize={'sm'}
+                fontSize={'md'}
                 fontWeight={800}
                 color={linkColor}
                 _hover={{
@@ -398,7 +396,7 @@ const NAV_ITEMS: Array<NavItem> = [
         children: [
           {
             label: '改色膜',
-            href: '#',
+            href: '/services/color-film',
           },
           {
             label: '犀牛皮',
