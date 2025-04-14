@@ -7,7 +7,7 @@ interface TeamMemberProps {
   imageUrl: string;
 }
 
-const TeamMemberContent = ({
+const TeamIntroductionContent = ({
   name,
   title,
   description,
@@ -42,7 +42,7 @@ const TeamMemberContent = ({
   );
 };
 
-const TeamMember = ({ id }: { id: string }) => {
+const TeamIntroduction = ({ id }: { id: string }) => {
   const teamMembers = [
     {
       name: 'Philippa',
@@ -112,11 +112,11 @@ const TeamMember = ({ id }: { id: string }) => {
         px="4"
       >
         {teamMembers.map((member, index) => (
-          <TeamMemberContent key={index} {...member} />
+          <TeamIntroductionContent key={index} {...member} />
         ))}
       </Grid>
     </Container>
   );
 };
 
-export default TeamMember;
+export default TeamIntroduction;

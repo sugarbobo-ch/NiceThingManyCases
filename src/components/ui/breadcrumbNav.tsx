@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Breadcrumb, Box, Icon, Container } from '@chakra-ui/react';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { JSX, useMemo } from 'react';
 import { FaHome } from 'react-icons/fa';
 
 // Define interface for route mapping
@@ -22,14 +22,33 @@ interface BreadcrumbNavProps {
   maxDisplayedCrumbs?: number;
 }
 
+const defaultRouteLabels = {
+  '/support': '常見QA',
+  '/products/software': '軟體解決方案',
+  '/products/hardware': '硬體設備',
+  '/about': '關於我們',
+  '/contact': '聯絡我們',
+  '/blog': '部落格',
+  '/services/color-film': '改色膜',
+  '/products/rhino-skin': '犀牛皮',
+  '/products/color-rhino-skin': '改色犀牛皮',
+  '/products/custom-painting': '客製化彩繪',
+  '/products/corporate-image-car': '企業形象車',
+  '/works': '作品欣賞',
+} satisfies RouteMapping;
+
 // Component that provides breadcrumb navigation
 export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
   homeLabel = '首頁',
-  routeLabels = {},
+  routeLabels,
   showHomeIcon = true,
   size = 'lg',
   maxDisplayedCrumbs,
 }) => {
+  const mergedRouteLabels = useMemo(
+    () => ({ ...defaultRouteLabels, ...routeLabels }),
+    [routeLabels]
+  );
   const pathname = usePathname();
 
   // Generate breadcrumb items based on current path
@@ -42,13 +61,22 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
       const segments = pathname.split('/').filter(Boolean);
 
       let currentPath = '';
-      segments.forEach((segment) => {
+      segments.forEach((segment, index) => {
         currentPath += `/${segment}`;
 
         // Use custom label from routeLabels if available, otherwise capitalize segment
         const label =
-          routeLabels[currentPath] ||
+          mergedRouteLabels[currentPath as keyof typeof mergedRouteLabels] ||
           segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+
+        // If it's the last 2 segment and a custom label exists for the full path, use it
+        if (index === segments.length - 2) {
+          const fullPathLabel =
+            mergedRouteLabels[pathname as keyof typeof mergedRouteLabels];
+          if (fullPathLabel) {
+            return;
+          }
+        }
 
         crumbs.push({ href: currentPath, label });
       });
@@ -63,7 +91,7 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
     }
 
     return crumbs;
-  }, [pathname, homeLabel, routeLabels, maxDisplayedCrumbs]);
+  }, [homeLabel, pathname, maxDisplayedCrumbs, mergedRouteLabels]);
 
   const breadcrumbContent = useMemo(() => {
     const breadcrumbWithoutSeparator = breadcrumbs.map((crumb, index) => {
@@ -120,20 +148,19 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
       );
     });
 
-    const breadcrumbWithSeparator = breadcrumbWithoutSeparator.reduce(
-      (acc, crumb, index) => {
-        if (index < breadcrumbWithoutSeparator.length - 1) {
-          acc.push(
-            crumb,
-            <Breadcrumb.Separator color="gray.300" key={`Separator-${index}`} />
-          );
-        } else {
-          acc.push(crumb);
-        }
-        return acc;
-      },
-      []
-    );
+    const breadcrumbWithSeparator = breadcrumbWithoutSeparator.reduce<
+      JSX.Element[]
+    >((acc, crumb, index) => {
+      if (index < breadcrumbWithoutSeparator.length - 1) {
+        acc.push(
+          crumb,
+          <Breadcrumb.Separator color="gray.300" key={`Separator-${index}`} />
+        );
+      } else {
+        acc.push(crumb);
+      }
+      return acc;
+    }, []);
     return breadcrumbWithSeparator;
   }, [breadcrumbs, showHomeIcon]);
 

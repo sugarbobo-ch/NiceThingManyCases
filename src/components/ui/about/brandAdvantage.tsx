@@ -14,25 +14,21 @@ const CardItemData = [
     title: '一站式服務中心',
     description:
       '無論是新車配件、包膜隔熱紙、保養維修或改裝升級，一站搞定所有大小事。',
-    image: '',
   },
   {
     title: '原廠級專業技師',
     description:
       '多年電動車服務廠經驗技師團隊，種，比照美國原廠標準化施工服務。',
-    image: '',
   },
   {
     title: '高規格客戶服務',
     description:
       '除了專業熱情的夥伴外，更提供80坪客戶休息區、VIP Lounge與餐飲服務。',
-    image: '',
   },
   {
     title: '頂級駐廠設備',
     description:
       '採用Hunter、Snap-On等頂級設備，比照原廠最高規格建置服務中心。',
-    image: '',
   },
 ] satisfies CardItemProps[];
 
@@ -102,7 +98,6 @@ const BrandAdvantage = ({ id }: { id: string }) => {
                 key={item.title}
                 title={item.title}
                 description={item.description}
-                image={item.image}
               />
             ))}
           </Grid>

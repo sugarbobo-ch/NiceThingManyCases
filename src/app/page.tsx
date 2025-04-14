@@ -1,21 +1,7 @@
 import BrandAdvantage from '@/components/ui/about/brandAdvantage';
 import styles from './page.module.css';
 import BrandStory from '@/components/ui/about/brandStory';
-import TeamMember from '@/components/ui/about/teamMember';
-
-const routeLabels = {
-  '/products': '產品',
-  '/products/software': '軟體解決方案',
-  '/products/hardware': '硬體設備',
-  '/about': '關於我們',
-  '/contact': '聯絡我們',
-  '/blog': '部落格',
-  '/services/color-film': '改色膜',
-  '/products/rhino-skin': '犀牛皮',
-  '/products/color-rhino-skin': '改色犀牛皮',
-  '/products/custom-painting': '客製化彩繪',
-  '/products/corporate-image-car': '企業形象車',
-};
+import TeamIntroduction from '@/components/ui/about/teamIntroduction';
 
 export default function Home() {
   return (
@@ -23,7 +9,7 @@ export default function Home() {
       <main className={styles.main}>
         <BrandAdvantage id="#brand-advantage" />
         <BrandStory id="#brand-story" />
-        <TeamMember id="#team-member" />
+        <TeamIntroduction id="#team-introduction" />
       </main>
       <footer className={styles.footer}>
         <a

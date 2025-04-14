@@ -19,7 +19,177 @@ import {
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { LuChevronDown } from 'react-icons/lu';
 import Link from '@/components/ui/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+
+const NAV_ITEMS: Array<NavItem> = [
+  {
+    label: '關於我們',
+    href: '/',
+    children: [
+      {
+        label: '品牌故事',
+        href: '/#brand-story',
+      },
+      {
+        label: '團隊介紹',
+        href: '/#team-introduction',
+      },
+      {
+        label: '品牌優勢',
+        href: '/#brand-advantage',
+      },
+      {
+        label: '異業合作',
+        href: '/',
+      },
+    ],
+  },
+  {
+    label: '服務項目',
+    children: [
+      {
+        label: '「主要服務項目」',
+        children: [
+          {
+            label: '改色膜',
+            href: '/services/color-film',
+          },
+          {
+            label: '犀牛皮',
+            href: '#',
+          },
+          {
+            label: '改色犀牛皮',
+            href: '#',
+          },
+          {
+            label: '客製化彩繪',
+            href: '#',
+          },
+          {
+            label: '企業形象車',
+            href: '#',
+          },
+        ],
+      },
+      {
+        label: '「額外服務」',
+        children: [
+          {
+            label: '一站式施工',
+            href: '#',
+          },
+          {
+            label: '合作廠商加購',
+            href: '#',
+          },
+          {
+            label: '合作廠商優惠',
+            href: '#',
+          },
+        ],
+      },
+      {
+        label: '「服務預約步驟」',
+        children: [
+          {
+            label: '諮詢服務(諮詢預約)',
+            href: '#',
+          },
+          {
+            label: '下訂流程',
+            href: '#',
+          },
+          {
+            label: '施工流程',
+            href: '#',
+          },
+          {
+            label: '專屬服務終身保固',
+            href: '#',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: '作品欣賞',
+    href: '/works',
+    children: [
+      {
+        label: '改色包膜',
+        href: '/works',
+      },
+      {
+        label: '透明/消光犀牛皮',
+        href: '/works',
+      },
+      {
+        label: '改色犀牛皮',
+        href: '/works',
+      },
+      {
+        label: '車主分享',
+        href: '#',
+      },
+    ],
+  },
+  {
+    label: '客戶服務',
+    children: [
+      {
+        label: 'LINE@客服',
+        href: '#',
+      },
+      {
+        label: '常見QA',
+        href: '/support',
+      },
+      {
+        label: '聯絡我們',
+        href: '#',
+      },
+      {
+        label: '測試者募集！',
+        href: '#',
+      },
+    ],
+  },
+  {
+    label: '最新活動',
+    children: [
+      {
+        label: '活動總表',
+        href: '#',
+      },
+      {
+        label: '主打活動',
+        href: '#',
+      },
+      {
+        label: '指定色',
+        href: '#',
+      },
+      {
+        label: '遺愛色',
+        href: '#',
+      },
+      {
+        label: '年度優惠',
+        href: '#',
+      },
+      {
+        label: '表單優惠',
+        href: '#',
+      },
+      {
+        label: '推薦優惠',
+        href: '#',
+      },
+    ],
+  },
+];
 
 export default function WithSubnavigation() {
   const { open, onToggle } = useDisclosure();
@@ -111,6 +281,40 @@ const DesktopNav = () => {
   const linkHoverColor = 'gray.900';
   const popoverContentBgColor = 'white';
   const router = useRouter();
+  const pathname = usePathname();
+  console.log(pathname);
+
+  const isActive = (href: string | undefined, navItem: NavItem) => {
+    const normalizedPathname = pathname.toLowerCase();
+    console.log('normalizedPathname', normalizedPathname);
+
+    const normalizeHref = (href: string | undefined) => {
+      if (!href) return '';
+      return href.replace(/\/?#.*$/, '').toLowerCase();
+    };
+
+    if (!href) {
+      const flattenChildren = (children?: Array<NavItem>): Array<NavItem> => {
+        return (
+          children?.reduce((acc, child) => {
+            if (child.children) {
+              return acc.concat(child, ...flattenChildren(child.children));
+            }
+            return acc.concat(child);
+          }, [] as Array<NavItem>) || []
+        );
+      };
+
+      const allChildren = flattenChildren(navItem.children);
+      return allChildren.some((child) => {
+        const normalizedChildHref = normalizeHref(child.href);
+        return normalizedChildHref === normalizedPathname;
+      });
+    }
+
+    const normalizedHref = normalizeHref(href);
+    return normalizedPathname === normalizedHref;
+  };
 
   return (
     <Stack direction={'row'} gap={4} alignItems={'center'}>
@@ -118,18 +322,63 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <HoverCard.Root openDelay={100} closeDelay={100}>
             <HoverCard.Trigger>
-              <Box
-                p={2}
-                fontSize={'md'}
-                fontWeight={800}
-                color={linkColor}
-                _hover={{
-                  textDecoration: 'none',
-                  color: linkHoverColor,
-                }}
-              >
-                <Link href={navItem.href} text={navItem.label} />
-              </Box>
+              {isActive(navItem.href, navItem) ? (
+                <Box
+                  p={2}
+                  fontSize={'md'}
+                  fontWeight={800}
+                  color={linkHoverColor}
+                  position="relative"
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    bottom: '-3px',
+                    left: 0,
+                    width: '100%',
+                    height: '3px',
+                    backgroundColor: linkHoverColor,
+                  }}
+                >
+                  <Link href={navItem.href} text={navItem.label} />
+                </Box>
+              ) : (
+                <Box
+                  p={2}
+                  fontSize={'md'}
+                  fontWeight={800}
+                  color={linkColor}
+                  position="relative"
+                  _hover={{
+                    textDecoration: 'none',
+                    color: linkHoverColor,
+                    _before: {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '-3px',
+                      left: 0,
+                      width: '100%',
+                      height: '3px',
+                      backgroundColor: linkHoverColor,
+                      transition: 'width .3s',
+                    },
+                  }}
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    width: '0',
+                    bottom: '-3px',
+                    right: '0',
+                    left: '0',
+                    margin: '0 auto',
+                    height: '3px',
+                    backgroundColor: linkHoverColor,
+                    transition: 'width .3s ease-in-out',
+                  }}
+                  cursor="pointer"
+                >
+                  <Link href={navItem.href} text={navItem.label} />
+                </Box>
+              )}
             </HoverCard.Trigger>
 
             {navItem.children && (
@@ -365,178 +614,3 @@ interface NavItem {
   children?: Array<NavItem>;
   href?: string;
 }
-
-const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: '關於我們',
-    children: [
-      {
-        label: '品牌故事',
-        href: '#',
-      },
-      {
-        label: '團隊介紹',
-        href: '#',
-      },
-      {
-        label: '品牌優勢',
-        href: '#brand-advantage',
-      },
-      {
-        label: '異業合作',
-        href: '#',
-      },
-    ],
-  },
-  {
-    label: '服務項目',
-    children: [
-      {
-        label: '「主要服務項目」',
-        children: [
-          {
-            label: '改色膜',
-            href: '/services/color-film',
-          },
-          {
-            label: '犀牛皮',
-            href: '#',
-          },
-          {
-            label: '改色犀牛皮',
-            href: '#',
-          },
-          {
-            label: '客製化彩繪',
-            href: '#',
-          },
-          {
-            label: '企業形象車',
-            href: '#',
-          },
-        ],
-      },
-      {
-        label: '「額外服務」',
-        children: [
-          {
-            label: '一站式施工',
-            href: '#',
-          },
-          {
-            label: '合作廠商加購',
-            href: '#',
-          },
-          {
-            label: '合作廠商優惠',
-            href: '#',
-          },
-        ],
-      },
-      {
-        label: '「服務預約步驟」',
-        children: [
-          {
-            label: '諮詢服務(諮詢預約)',
-            href: '#',
-          },
-          {
-            label: '下訂流程',
-            href: '#',
-          },
-          {
-            label: '施工流程',
-            href: '#',
-          },
-          {
-            label: '專屬服務終身保固',
-            href: '#',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: '作品欣賞',
-    children: [
-      {
-        label: '改色包膜',
-        href: '#',
-      },
-      {
-        label: '透明/消光犀牛皮',
-        href: '#',
-      },
-      {
-        label: '改色犀牛皮',
-        href: '#',
-      },
-      {
-        label: '客製化彩繪',
-        href: '#',
-      },
-      {
-        label: '企業形象車',
-        href: '#',
-      },
-      {
-        label: '車主分享',
-        href: '#',
-      },
-    ],
-  },
-  {
-    label: '客戶服務',
-    children: [
-      {
-        label: 'LINE@客服',
-        href: '#',
-      },
-      {
-        label: '常見QA',
-        href: '#',
-      },
-      {
-        label: '聯絡我們',
-        href: '#',
-      },
-      {
-        label: '測試者募集！',
-        href: '#',
-      },
-    ],
-  },
-  {
-    label: '最新活動',
-    children: [
-      {
-        label: '活動總表',
-        href: '#',
-      },
-      {
-        label: '主打活動',
-        href: '#',
-      },
-      {
-        label: '指定色',
-        href: '#',
-      },
-      {
-        label: '遺愛色',
-        href: '#',
-      },
-      {
-        label: '年度優惠',
-        href: '#',
-      },
-      {
-        label: '表單優惠',
-        href: '#',
-      },
-      {
-        label: '推薦優惠',
-        href: '#',
-      },
-    ],
-  },
-];

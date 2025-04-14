@@ -22,11 +22,10 @@ import {
   FaToolbox,
   FaRegClock,
 } from 'react-icons/fa';
-import { BreadcrumbNav } from '@/components/ui/beadcrumbNav';
+import { BreadcrumbNav } from '@/components/ui/breadcrumbNav';
 import CardItem from '@/components/ui/cardItem';
 import kimImage from '/public/KIM7486_0.webp';
 
-// 定義路徑映射
 const routeLabels = {
   '/': '首頁',
   '/services': '主要服務項目',
