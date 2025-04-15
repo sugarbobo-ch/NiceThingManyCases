@@ -20,7 +20,6 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { LuChevronDown } from 'react-icons/lu';
 import Link from '@/components/ui/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 
 const NAV_ITEMS: Array<NavItem> = [
   {
@@ -282,7 +281,6 @@ const DesktopNav = () => {
   const popoverContentBgColor = 'white';
   const router = useRouter();
   const pathname = usePathname();
-  console.log(pathname);
 
   const isActive = (href: string | undefined, navItem: NavItem) => {
     const normalizedPathname = pathname.toLowerCase();
