@@ -13,7 +13,7 @@ import kimImage from '/public/KIM7486_0.webp';
 
 export interface WorkCardItemProps extends GridItemProps {
   title: string;
-  description: string;
+  description?: string;
   image?: StaticImageData | string;
   clickable?: boolean;
   onClick?: () => void;
@@ -79,7 +79,7 @@ const WorkCardItem = ({
             </Text>
           </HStack>
 
-          <Text userSelect="none">{description}</Text>
+          {description && <Text userSelect="none">{description}</Text>}
         </Box>
       </VStack>
     </GridItem>

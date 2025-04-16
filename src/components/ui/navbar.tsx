@@ -15,11 +15,14 @@ import {
   Grid,
   GridItem,
   Container,
+  Link as ChakraLink,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { LuChevronDown } from 'react-icons/lu';
 import Link from '@/components/ui/link';
 import { usePathname, useRouter } from 'next/navigation';
+import logo from '/public/logo.svg';
+import Image from 'next/image';
 
 const NAV_ITEMS: Array<NavItem> = [
   {
@@ -235,16 +238,25 @@ export default function WithSubnavigation() {
             </Flex>
             <Flex
               flex={{ base: 1 }}
-              justify={{ base: 'space-between', md: 'left' }}
+              justifyContent={{ base: 'space-between', md: 'left' }}
+              alignItems="center"
             >
-              <Text
-                textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-                verticalAlign={'middle'}
-                fontFamily={'heading'}
-                color={'gray.800'}
+              <ChakraLink
+                href="/"
+                display="flex"
+                alignItems="center"
+                justifyContent={useBreakpointValue({
+                  base: 'center',
+                  md: 'left',
+                })}
+                transform={useBreakpointValue({
+                  base: 'translate(-50%, -5%)',
+                  md: 'translateY(-5%)',
+                })}
+                height="100%"
               >
-                Logo
-              </Text>
+                <Image src={logo} alt="好事多膜" height={40} />
+              </ChakraLink>
 
               <Flex display={{ base: 'none', md: 'flex' }} ml={10} m="auto">
                 <DesktopNav />

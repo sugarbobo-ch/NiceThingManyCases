@@ -1,20 +1,27 @@
-import { FAQ, FAQCategoryWithFAQs, FAQResponse } from '@/types/strapi';
 import axios from 'axios';
 import qs from 'qs';
+import {
+  FAQ,
+  FAQCategoryWithFAQs,
+  FAQResponse,
+  CarModelResponse,
+  FilmBrandResponse,
+} from '@/types/strapi';
+import { FiltersType } from '@/app/works/page';
 
-if (!process.env.NEXT_PUBLIC_STRAPI_API_URL) {
-  throw new Error('Environment variable NEXT_PUBLIC_STRAPI_API_URL is not defined.');
+if (!process.env.NEXT_PUBLIC_STRAPI_API_BASE_URL) {
+  throw new Error(
+    'Environment variable NEXT_PUBLIC_STRAPI_API_BASE_URL is not defined.'
+  );
 }
 
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-// const API_TOKEN = process.env.STRAPI_API_TOKEN;
+const BASE_URL = process.env.NEXT_PUBLIC_STRAPI_API_BASE_URL;
 
 // Create an axios instance with default config
 const strapiClient = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: `${BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
-    // Authorization: `Bearer ${API_TOKEN}`,
   },
 });
 
@@ -64,7 +71,9 @@ export async function fetchFAQCategories() {
 }
 
 // Function to fetch questions by category ID
-export async function fetchQuestionsByCategory(categoryId: number | string): Promise<FAQResponse> {
+export async function fetchQuestionsByCategory(
+  categoryId: number | string
+): Promise<FAQResponse> {
   return fetchFromStrapi<FAQ>('faqs', {
     filters: {
       category: {
@@ -106,4 +115,61 @@ export async function searchQuestions(
   });
 
   return fetchFromStrapi<FAQ>(`faqs?${queryString}`);
+}
+
+// Function to fetch car models
+export async function fetchCarModels(
+  filters?: FiltersType
+): Promise<CarModelResponse> {
+  try {
+    let query = '';
+    if (filters) {
+      query = qs.stringify(
+        {
+          filters: {
+            filmType:
+              filters.filmType && filters.filmType !== 'all'
+                ? { $eq: filters.filmType }
+                : undefined,
+            glossEffect: filters.glossEffect?.length
+              ? { $in: filters.glossEffect }
+              : undefined,
+            filmBrand: filters.filmBrand?.length
+              ? { $in: filters.filmBrand }
+              : undefined,
+            colorTone: filters.colorTone?.length
+              ? { $in: filters.colorTone }
+              : undefined,
+            colorSeries: filters.colorSeries?.length
+              ? { $in: filters.colorSeries }
+              : undefined,
+            carBrand: filters.carBrand?.length
+              ? { $in: filters.carBrand }
+              : undefined,
+          },
+        },
+        { encodeValuesOnly: true }
+      );
+    }
+    const response = await strapiClient.get<CarModelResponse>(
+      `car-models${query ? `?${query}` : ''}`
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching car models:', error);
+    throw error;
+  }
+}
+
+// Function to fetch film brands
+export async function fetchFilmBrands(): Promise<FilmBrandResponse> {
+  try {
+    const response = await strapiClient.get<FilmBrandResponse>('film-brands');
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching film brands:', error);
+    throw error;
+  }
 }

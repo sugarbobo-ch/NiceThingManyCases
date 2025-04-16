@@ -205,7 +205,7 @@ const WorkFilterFields = ({
         </Accordion.Item>
       </Accordion.Root>
 
-      {filters.filmType === 'ppf' && (
+      {filters.filmType === 'others' && (
         <>
           <Accordion.Root collapsible py="4">
             <Accordion.Item value="colorTone">

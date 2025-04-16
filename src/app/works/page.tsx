@@ -17,6 +17,10 @@ import {
 import BreadcrumbNav from '@/components/ui/breadcrumbNav';
 import WorkFilterFields from '@/components/ui/works/workFilterFields';
 import WorkCardItem from '@/components/ui/works/workCardItem';
+import { fetchCarModels } from '@/lib/api/strapi';
+import { useEffect } from 'react';
+import { CarModel } from '@/types/strapi';
+const qs = require('qs');
 
 const filmTypeOptions = [
   { label: '全部', value: 'all' },
@@ -92,31 +96,27 @@ const WorksPage: React.FC = () => {
     colorSeries: [] as string[],
     carBrand: [] as string[],
   });
+  const [carModels, setCarModels] = useState<CarModel[]>([]);
 
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
 
-  const carModels = [
-    {
-      id: 1,
-      name: 'Toyota Camry',
-      description: '',
-    },
-    {
-      id: 2,
-      name: 'Tesla Model 3',
-      description: '',
-    },
-    {
-      id: 3,
-      name: 'Ford Mustang',
-      description: '',
-    },
-    {
-      id: 4,
-      name: 'BMW X5',
-      description: '',
-    },
-  ];
+  useEffect(() => {
+    const loadCarModels = async () => {
+      const { data } = await fetchCarModels();
+      setCarModels(data);
+    };
+
+    loadCarModels();
+  }, []);
+
+  useEffect(() => {
+    const loadFilteredCarModels = async (filters: FiltersType) => {
+      const { data } = await fetchCarModels(filters);
+      setCarModels(data);
+    };
+
+    loadFilteredCarModels(filters);
+  }, [filters]);
 
   return (
     <Box>
@@ -251,7 +251,6 @@ const WorksPage: React.FC = () => {
                   <WorkCardItem
                     key={car.id}
                     title={car.name}
-                    description={car.description}
                     height="250px"
                     clickable
                     onClick={() => console.log(`Clicked on ${car.name}`)}

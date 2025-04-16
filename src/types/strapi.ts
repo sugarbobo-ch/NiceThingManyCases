@@ -2,7 +2,7 @@
 export interface StrapiResponse<T> {
   data: T[];
   meta: {
-    pagination?: StrapiPagination
+    pagination?: StrapiPagination;
   };
 }
 
@@ -92,3 +92,27 @@ export interface FAQWithCategory extends FAQ {
 }
 
 export type FAQResponse = StrapiResponse<FAQ>;
+
+// Car Model
+export interface CarModel extends StrapiBaseModel {
+  name: string;
+  filmType: string | null;
+  glossEffect: string | null;
+  colorTone: string | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export type CarModelResponse = StrapiResponse<CarModel>;
+
+// Film Brand
+export interface FilmBrand extends StrapiBaseModel {
+  name: string;
+  icon: StrapiImage[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export type FilmBrandResponse = StrapiResponse<FilmBrand>;
