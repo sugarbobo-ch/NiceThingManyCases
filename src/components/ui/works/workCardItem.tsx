@@ -9,12 +9,13 @@ import {
 } from '@chakra-ui/react';
 import { StaticImageData } from 'next/image';
 import Image from 'next/image';
-import kimImage from '/public/KIM7486_0.webp';
+import defaultThumbnail from '/public/KIM7486_0.webp';
+import { StrapiImage } from '@/types/strapi';
 
 export interface WorkCardItemProps extends GridItemProps {
   title: string;
   description?: string;
-  image?: StaticImageData | string;
+  image?: StrapiImage | StaticImageData | string;
   clickable?: boolean;
   onClick?: () => void;
 }
@@ -27,10 +28,7 @@ const WorkCardItem = ({
   onClick,
   ...rest
 }: WorkCardItemProps) => {
-  // Handle both StaticImageData and string URLs
-  const imageUrl = typeof image === 'string' ? image : image?.src;
-  console.log('imageUrl', imageUrl);
-
+  console.log('image', image);
   return (
     <GridItem
       colSpan={{ base: 2, sm: 1 }}
@@ -57,14 +55,39 @@ const WorkCardItem = ({
             bottom={0}
             overflow="hidden"
           >
-            <Image
-              src={kimImage}
-              alt={title}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              style={{ objectFit: 'cover' }}
-              quality={80}
-            />
+            {image &&
+              typeof image !== 'string' &&
+              'url' in image &&
+              image.url && (
+                <Image
+                  src={image.url}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ objectFit: 'cover' }}
+                  quality={80}
+                />
+              )}
+            {image && typeof image === 'string' && (
+              <Image
+                src={image}
+                alt={title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ objectFit: 'cover' }}
+                quality={80}
+              />
+            )}
+            {!image && (
+              <Image
+                src={defaultThumbnail}
+                alt={title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ objectFit: 'cover' }}
+                quality={80}
+              />
+            )}
           </Box>
         </Box>
 

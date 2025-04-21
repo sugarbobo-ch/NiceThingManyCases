@@ -17,10 +17,10 @@ import {
 import BreadcrumbNav from '@/components/ui/breadcrumbNav';
 import WorkFilterFields from '@/components/ui/works/workFilterFields';
 import WorkCardItem from '@/components/ui/works/workCardItem';
-import { fetchCarModels } from '@/lib/api/strapi';
+import { fetchWorks } from '@/lib/api/strapi';
 import { useEffect } from 'react';
-import { CarModel } from '@/types/strapi';
-const qs = require('qs');
+import { WorkModel } from '@/types/strapi';
+import { useRouter } from 'next/navigation';
 
 const filmTypeOptions = [
   { label: '全部', value: 'all' },
@@ -43,12 +43,12 @@ const filmBrandOptions = [
   { label: '國產品牌', value: 'domestic' },
 ];
 
-const colorToneOptions = [
+const brightnessOptions = [
   { label: '淺色', value: 'light' },
   { label: '深色', value: 'dark' },
 ];
 
-const colorSeriesOptions = [
+const colorCategoryOptions = [
   { label: '紅', value: 'red' },
   { label: '粉', value: 'pink' },
   { label: '橙', value: 'orange' },
@@ -63,7 +63,7 @@ const colorSeriesOptions = [
   { label: '黑白漸層', value: 'black-white-gradient' },
 ];
 
-const carBrandOptions = [
+const carModelOptions = [
   { label: 'Tesla Model 3', value: 'tesla-model-3' },
   { label: 'Tesla Model Y', value: 'tesla-model-y' },
   { label: 'Tesla Model S', value: 'tesla-model-s' },
@@ -81,9 +81,9 @@ export type FiltersType = {
   filmType: string;
   glossEffect: string[];
   filmBrand: string[];
-  colorTone: string[];
-  colorSeries: string[];
-  carBrand: string[];
+  brightness: string[];
+  colorCategory: string[];
+  carModel: string[];
 };
 
 const WorksPage: React.FC = () => {
@@ -92,18 +92,19 @@ const WorksPage: React.FC = () => {
     filmType: 'all',
     glossEffect: [] as string[],
     filmBrand: [] as string[],
-    colorTone: [] as string[],
-    colorSeries: [] as string[],
-    carBrand: [] as string[],
+    brightness: [] as string[],
+    colorCategory: [] as string[],
+    carModel: [] as string[],
   });
-  const [carModels, setCarModels] = useState<CarModel[]>([]);
+  const [workModels, setWorkModels] = useState<WorkModel[]>([]);
+  const router = useRouter();
 
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
 
   useEffect(() => {
     const loadCarModels = async () => {
-      const { data } = await fetchCarModels();
-      setCarModels(data);
+      const { data } = await fetchWorks();
+      setWorkModels(data);
     };
 
     loadCarModels();
@@ -111,8 +112,8 @@ const WorksPage: React.FC = () => {
 
   useEffect(() => {
     const loadFilteredCarModels = async (filters: FiltersType) => {
-      const { data } = await fetchCarModels(filters);
-      setCarModels(data);
+      const { data } = await fetchWorks(filters);
+      setWorkModels(data);
     };
 
     loadFilteredCarModels(filters);
@@ -191,9 +192,9 @@ const WorksPage: React.FC = () => {
                   filmTypeOptions={filmTypeOptions}
                   glossEffectOptions={glossEffectOptions}
                   filmBrandOptions={filmBrandOptions}
-                  colorToneOptions={colorToneOptions}
-                  colorSeriesOptions={colorSeriesOptions}
-                  carBrandOptions={carBrandOptions}
+                  brightnessOptions={brightnessOptions}
+                  colorCategoryOptions={colorCategoryOptions}
+                  carModelOptions={carModelOptions}
                   setFilters={setFilters}
                   filters={filters}
                 />
@@ -218,9 +219,9 @@ const WorksPage: React.FC = () => {
                         filmTypeOptions={filmTypeOptions}
                         glossEffectOptions={glossEffectOptions}
                         filmBrandOptions={filmBrandOptions}
-                        colorToneOptions={colorToneOptions}
-                        colorSeriesOptions={colorSeriesOptions}
-                        carBrandOptions={carBrandOptions}
+                        brightnessOptions={brightnessOptions}
+                        colorCategoryOptions={colorCategoryOptions}
+                        carModelOptions={carModelOptions}
                         setFilters={setFilters}
                         filters={filters}
                       />
@@ -247,13 +248,14 @@ const WorksPage: React.FC = () => {
                 }}
                 gap={4}
               >
-                {carModels.map((car) => (
+                {workModels.map((car) => (
                   <WorkCardItem
                     key={car.id}
                     title={car.name}
                     height="250px"
+                    image={car.thumbnail}
                     clickable
-                    onClick={() => console.log(`Clicked on ${car.name}`)}
+                    onClick={() => router.push(`/works/${car.slug}`)}
                   />
                 ))}
               </Grid>

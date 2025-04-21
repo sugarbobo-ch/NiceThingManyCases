@@ -9,6 +9,9 @@ export interface StrapiResponse<T> {
 interface StrapiBaseModel {
   id: number;
   documentId: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
 export interface StrapiPagination {
@@ -41,9 +44,6 @@ export interface StrapiImage {
   previewUrl: string | null;
   provider: string;
   provider_metadata: unknown | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 }
 
 export interface StrapiImageFormat {
@@ -65,9 +65,6 @@ export interface FAQCategory extends StrapiBaseModel {
   slug: string;
   description?: string;
   image?: StrapiImage;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 }
 
 export interface FAQCategoryWithFAQs extends FAQCategory {
@@ -82,9 +79,6 @@ export interface FAQ extends StrapiBaseModel {
   slug: string;
   answer: string;
   category: FAQCategory;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 }
 
 export interface FAQWithCategory extends FAQ {
@@ -93,26 +87,27 @@ export interface FAQWithCategory extends FAQ {
 
 export type FAQResponse = StrapiResponse<FAQ>;
 
-// Car Model
-export interface CarModel extends StrapiBaseModel {
+// Work Model
+export interface WorkModel extends StrapiBaseModel {
   name: string;
+  slug: string;
   filmType: string | null;
   glossEffect: string | null;
-  colorTone: string | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+  filmBrand: FilmBrand | null;
+  brightness: string | null;
+  colorCategories: string[] | null;
+  carModel: string | null;
+  thumbnail: StrapiImage;
+  images: StrapiImage[];
 }
 
-export type CarModelResponse = StrapiResponse<CarModel>;
+export type WorkModelResponse = StrapiResponse<WorkModel>;
 
 // Film Brand
 export interface FilmBrand extends StrapiBaseModel {
   name: string;
   icon: StrapiImage[];
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+  works: WorkModel[];
 }
 
 export type FilmBrandResponse = StrapiResponse<FilmBrand>;

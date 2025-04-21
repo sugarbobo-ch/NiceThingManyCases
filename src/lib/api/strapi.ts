@@ -4,7 +4,7 @@ import {
   FAQ,
   FAQCategoryWithFAQs,
   FAQResponse,
-  CarModelResponse,
+  WorkModelResponse,
   FilmBrandResponse,
 } from '@/types/strapi';
 import { FiltersType } from '@/app/works/page';
@@ -117,10 +117,10 @@ export async function searchQuestions(
   return fetchFromStrapi<FAQ>(`faqs?${queryString}`);
 }
 
-// Function to fetch car models
-export async function fetchCarModels(
+// Function to fetch works
+export async function fetchWorks(
   filters?: FiltersType
-): Promise<CarModelResponse> {
+): Promise<WorkModelResponse> {
   try {
     let query = '';
     if (filters) {
@@ -137,22 +137,23 @@ export async function fetchCarModels(
             filmBrand: filters.filmBrand?.length
               ? { $in: filters.filmBrand }
               : undefined,
-            colorTone: filters.colorTone?.length
-              ? { $in: filters.colorTone }
+            brightness: filters.brightness?.length
+              ? { $in: filters.brightness }
               : undefined,
-            colorSeries: filters.colorSeries?.length
-              ? { $in: filters.colorSeries }
+            colorCategories: filters.colorCategory?.length
+              ? { $in: filters.colorCategory }
               : undefined,
-            carBrand: filters.carBrand?.length
-              ? { $in: filters.carBrand }
+            carModel: filters.carModel?.length
+              ? { $in: filters.carModel }
               : undefined,
           },
         },
         { encodeValuesOnly: true }
       );
     }
-    const response = await strapiClient.get<CarModelResponse>(
-      `car-models${query ? `?${query}` : ''}`
+    const response = await strapiClient.get<WorkModelResponse>(
+      `works${query ? `?${query}` : ''}`,
+      { params: { populate: '*' } }
     );
     console.log(response.data);
     return response.data;
@@ -170,6 +171,22 @@ export async function fetchFilmBrands(): Promise<FilmBrandResponse> {
     return response.data;
   } catch (error) {
     console.error('Error fetching film brands:', error);
+    throw error;
+  }
+}
+
+// Function to fetch a single work by slug
+export async function fetchWorkBySlug(
+  slug: string
+): Promise<WorkModelResponse> {
+  try {
+    const response = await strapiClient.get<WorkModelResponse>(
+      `works?filters[slug][$eq]=${slug}`,
+      { params: { populate: '*' } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching work with slug ${slug}:`, error);
     throw error;
   }
 }

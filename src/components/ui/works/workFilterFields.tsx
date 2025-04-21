@@ -20,9 +20,9 @@ interface WorkFilterFieldsProps {
   filmTypeOptions: OptionType[];
   glossEffectOptions: OptionType[];
   filmBrandOptions: OptionType[];
-  colorToneOptions: OptionType[];
-  colorSeriesOptions: OptionType[];
-  carBrandOptions: OptionType[];
+  brightnessOptions: OptionType[];
+  colorCategoryOptions: OptionType[];
+  carModelOptions: OptionType[];
   setFilters: (filters: FiltersType) => void;
   filters: FiltersType;
 }
@@ -31,9 +31,9 @@ const WorkFilterFields = ({
   filmTypeOptions,
   glossEffectOptions,
   filmBrandOptions,
-  colorToneOptions,
-  colorSeriesOptions,
-  carBrandOptions,
+  brightnessOptions,
+  colorCategoryOptions,
+  carModelOptions,
   setFilters,
   filters,
 }: WorkFilterFieldsProps) => {
@@ -66,23 +66,23 @@ const WorkFilterFields = ({
     [updateFilters]
   );
 
-  const setSelectedColorTone = useCallback(
+  const setSelectedBrightness = useCallback(
     (value: string[]) => {
-      updateFilters('colorTone', value);
+      updateFilters('brightness', value);
     },
     [updateFilters]
   );
 
-  const setSelectedColorSeries = useCallback(
+  const setSelectedColorCategory = useCallback(
     (value: string[]) => {
-      updateFilters('colorSeries', value);
+      updateFilters('colorCategory', value);
     },
     [updateFilters]
   );
 
-  const setSelectedCarBrand = useCallback(
+  const setSelectedCarModel = useCallback(
     (value: string[]) => {
-      updateFilters('carBrand', value);
+      updateFilters('carModel', value);
     },
     [updateFilters]
   );
@@ -222,21 +222,21 @@ const WorkFilterFields = ({
                   <CheckboxGroup
                     defaultValue={[]}
                     name="colorTone"
-                    value={filters.colorTone}
-                    onValueChange={setSelectedColorTone}
+                    value={filters.brightness}
+                    onValueChange={setSelectedBrightness}
                   >
                     <VStack align="flex-start" my="4" gap="4">
-                      {colorToneOptions.map((tone) => (
+                      {brightnessOptions.map((item) => (
                         <Checkbox.Root
-                          key={tone.value}
-                          value={tone.value}
+                          key={item.value}
+                          value={item.value}
                           _hover={{ cursor: 'pointer' }}
                         >
                           <Checkbox.HiddenInput />
                           <Checkbox.Control>
                             <Checkbox.Indicator />
                           </Checkbox.Control>
-                          <Checkbox.Label>{tone.label}</Checkbox.Label>
+                          <Checkbox.Label>{item.label}</Checkbox.Label>
                         </Checkbox.Root>
                       ))}
                     </VStack>
@@ -261,11 +261,11 @@ const WorkFilterFields = ({
                   <CheckboxGroup
                     defaultValue={[]}
                     name="colorSeries"
-                    value={filters.colorSeries}
-                    onValueChange={setSelectedColorSeries}
+                    value={filters.colorCategory}
+                    onValueChange={setSelectedColorCategory}
                   >
                     <VStack align="flex-start" my="4" gap="4">
-                      {colorSeriesOptions.map((color) => (
+                      {colorCategoryOptions.map((color) => (
                         <Checkbox.Root
                           key={color.value}
                           value={color.value}
@@ -301,21 +301,21 @@ const WorkFilterFields = ({
               <CheckboxGroup
                 defaultValue={[]}
                 name="carModels"
-                value={filters.carBrand}
-                onValueChange={setSelectedCarBrand}
+                value={filters.carModel}
+                onValueChange={setSelectedCarModel}
               >
                 <VStack align="flex-start" my="4" gap="4">
-                  {carBrandOptions.map((carBrand) => (
+                  {carModelOptions.map((carModel) => (
                     <Checkbox.Root
-                      key={carBrand.value}
-                      value={carBrand.value}
+                      key={carModel.value}
+                      value={carModel.value}
                       _hover={{ cursor: 'pointer' }}
                     >
                       <Checkbox.HiddenInput />
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
-                      <Checkbox.Label>{carBrand.label}</Checkbox.Label>
+                      <Checkbox.Label>{carModel.label}</Checkbox.Label>
                     </Checkbox.Root>
                   ))}
                 </VStack>
