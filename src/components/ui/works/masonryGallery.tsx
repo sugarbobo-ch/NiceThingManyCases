@@ -32,7 +32,6 @@ const MasonryGallery: React.FC<MasonryGalleryProps> = ({ works }) => {
     <Box px={4} py={8}>
       <SimpleGrid columns={columns} gap={4}>
         {works.map((work, workIndex) => {
-          // 獲取第一張圖片作為預覽
           const previewImage = work.images[0];
           if (!previewImage) return null;
 
