@@ -95,8 +95,8 @@ export interface WorkModel extends StrapiBaseModel {
   glossEffect: string | null;
   filmBrand: FilmBrand | null;
   brightness: string | null;
-  colorCategories: string[] | null;
-  carModel: string | null;
+  colorCategories: ColorCategory[] | null;
+  carModel: CarModel | null;
   thumbnail: StrapiImage;
   images: StrapiImage[];
 }
@@ -111,3 +111,21 @@ export interface FilmBrand extends StrapiBaseModel {
 }
 
 export type FilmBrandResponse = StrapiResponse<FilmBrand>;
+
+// Color Category
+export interface ColorCategory extends StrapiBaseModel {
+  name: string;
+  hex: string;
+  isDisplayColor: boolean;
+  works: WorkModel[];
+}
+
+export type ColorCategoryResponse = StrapiResponse<ColorCategory>;
+
+// Car Model
+export interface CarModel extends StrapiBaseModel {
+  name: string;
+  works: WorkModel[];
+}
+
+export type CarModelResponse = StrapiResponse<CarModel>;

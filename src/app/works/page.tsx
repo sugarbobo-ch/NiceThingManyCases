@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -13,14 +13,20 @@ import {
   Drawer,
   Portal,
   CloseButton,
+  Spinner,
 } from '@chakra-ui/react';
-import BreadcrumbNav from '@/components/ui/breadcrumbNav';
+import Breadcrumb from '@/components/ui/breadcrumb';
 import WorkFilterFields from '@/components/ui/works/workFilterFields';
 import WorkCardItem from '@/components/ui/works/workCardItem';
-import { fetchWorks } from '@/lib/api/strapi';
-import { useEffect } from 'react';
-import { WorkModel } from '@/types/strapi';
-import { useRouter } from 'next/navigation';
+import {
+  fetchWorks,
+  fetchColorCategories,
+  fetchFilmBrands,
+  fetchCarModels,
+} from '@/lib/api/strapi';
+import { ColorCategory, WorkModel, FilmBrand, CarModel } from '@/types/strapi';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { FaTimes } from 'react-icons/fa';
 
 const filmTypeOptions = [
   { label: '全部', value: 'all' },
@@ -87,37 +93,187 @@ export type FiltersType = {
 };
 
 const WorksPage: React.FC = () => {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState<FiltersType>({
-    filmType: 'all',
-    glossEffect: [] as string[],
-    filmBrand: [] as string[],
-    brightness: [] as string[],
-    colorCategory: [] as string[],
-    carModel: [] as string[],
-  });
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [workModels, setWorkModels] = useState<WorkModel[]>([]);
+  const [colorCategories, setColorCategories] = useState<ColorCategory[]>([]);
+  const [filmBrands, setFilmBrands] = useState<FilmBrand[]>([]);
+  const [carModels, setCarModels] = useState<CarModel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 從 URL 參數初始化篩選狀態
+  const initialFilters = useMemo(() => {
+    const params = new URLSearchParams(searchParams);
+    return {
+      filmType: params.get('filmType') || 'all',
+      glossEffect: params.getAll('glossEffect') || [],
+      filmBrand: params.getAll('filmBrand') || [],
+      brightness: params.getAll('brightness') || [],
+      colorCategory: params.getAll('colorCategory') || [],
+      carModel: params.getAll('carModel') || [],
+    };
+  }, [searchParams]);
+
+  const [filters, setFilters] = useState<FiltersType>(initialFilters);
+
+  // 更新 URL 參數
+  const updateUrlParams = useCallback(
+    (newFilters: FiltersType) => {
+      const params = new URLSearchParams();
+
+      if (newFilters.filmType !== 'all') {
+        params.set('filmType', newFilters.filmType);
+      }
+
+      newFilters.glossEffect.forEach((value) =>
+        params.append('glossEffect', value)
+      );
+      newFilters.filmBrand.forEach((value) =>
+        params.append('filmBrand', value)
+      );
+      newFilters.brightness.forEach((value) =>
+        params.append('brightness', value)
+      );
+      newFilters.colorCategory.forEach((value) =>
+        params.append('colorCategory', value)
+      );
+      newFilters.carModel.forEach((value) => params.append('carModel', value));
+
+      const newUrl = params.toString() ? `?${params.toString()}` : '/works';
+      router.push(newUrl, { scroll: false });
+    },
+    [router]
+  );
+
+  // 更新篩選狀態並同步到 URL
+  const handleFilterChange = useCallback(
+    (newFilters: FiltersType) => {
+      setFilters(newFilters);
+      updateUrlParams(newFilters);
+    },
+    [updateUrlParams]
+  );
+
+  const colorCategoryOptionsMemo = useMemo(() => {
+    if (colorCategories.length > 0) {
+      return colorCategories.map((category) => ({
+        value: category.name,
+        label: category.name,
+      }));
+    }
+    return colorCategoryOptions;
+  }, [colorCategories]);
+
+  const filmBrandOptionsMemo = useMemo(() => {
+    if (filmBrands.length > 0) {
+      return filmBrands.map((brand) => ({
+        label: brand.name,
+        value: brand.name,
+      }));
+    }
+    return filmBrandOptions;
+  }, [filmBrands]);
+
+  const carModelOptionsMemo = useMemo(() => {
+    if (carModels.length > 0) {
+      return carModels.map((model) => ({
+        value: model.name,
+        label: model.name,
+      }));
+    }
+    return carModelOptions;
+  }, [carModels]);
 
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
 
-  useEffect(() => {
-    const loadCarModels = async () => {
-      const { data } = await fetchWorks();
-      setWorkModels(data);
+  const clearFilters = useCallback(() => {
+    const defaultFilters = {
+      filmType: 'all',
+      glossEffect: [] as string[],
+      filmBrand: [] as string[],
+      brightness: [] as string[],
+      colorCategory: [] as string[],
+      carModel: [] as string[],
     };
+    setFilters(defaultFilters);
+    router.replace('/works', { scroll: false });
+  }, [router]);
 
-    loadCarModels();
-  }, []);
-
-  useEffect(() => {
-    const loadFilteredCarModels = async (filters: FiltersType) => {
-      const { data } = await fetchWorks(filters);
-      setWorkModels(data);
-    };
-
-    loadFilteredCarModels(filters);
+  const hasActiveFilters = useMemo(() => {
+    return (
+      filters.filmType !== 'all' ||
+      filters.glossEffect.length > 0 ||
+      filters.filmBrand.length > 0 ||
+      filters.brightness.length > 0 ||
+      filters.colorCategory.length > 0 ||
+      filters.carModel.length > 0
+    );
   }, [filters]);
+
+  // 初始化數據（只在組件首次渲染時執行）
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setIsLoading(true);
+        const [categoriesData, brandsData, modelsData] = await Promise.all([
+          fetchColorCategories(),
+          fetchFilmBrands(),
+          fetchCarModels(),
+        ]);
+        setColorCategories(categoriesData.data);
+        setFilmBrands(brandsData.data);
+        setCarModels(modelsData.data);
+      } catch (err) {
+        console.error('Error fetching initial data:', err);
+        setError('載入初始資料時發生錯誤，請稍後再試');
+      }
+    };
+
+    fetchInitialData();
+  }, []); // 空依賴數組表示只在組件掛載時執行一次
+
+  // 根據篩選條件獲取作品
+  useEffect(() => {
+    const fetchFilteredWorks = async () => {
+      try {
+        setIsLoading(true);
+        const worksData = await fetchWorks(filters);
+        setWorkModels(worksData.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching works:', err);
+        setError('載入作品時發生錯誤，請稍後再試');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFilteredWorks();
+  }, [filters]); // 只在篩選條件改變時執行
+
+  if (error) {
+    return (
+      <Center h="calc(100dvh - 60px)">
+        <VStack gap={4} align="center">
+          <Heading size="xl" color="red.500">
+            {error} 😭😭😭
+          </Heading>
+          <Button
+            variant="subtle"
+            p="4"
+            borderRadius="full"
+            onClick={() => {
+              window.location.href = '/works';
+            }}
+          >
+            重新載入
+          </Button>
+        </VStack>
+      </Center>
+    );
+  }
 
   return (
     <Box>
@@ -128,7 +284,12 @@ const WorksPage: React.FC = () => {
         bgSize="cover"
         bgPos="center"
       >
-        <BreadcrumbNav />
+        <Breadcrumb
+          items={[
+            { label: '首頁', href: '/' },
+            { label: '作品欣賞', href: '/works' },
+          ]}
+        />
 
         <Center alignSelf="center" minH="sm">
           <Grid
@@ -164,17 +325,31 @@ const WorksPage: React.FC = () => {
 
       <Container py={{ base: 4, lg: 8 }} px={4} margin={'auto'}>
         <Drawer.Root>
-          <Button
-            onClick={toggleFilter}
-            colorScheme="teal"
-            mb={4}
-            px={4}
-            size="lg"
-            borderRadius={'full'}
-            display={{ base: 'none', md: 'block' }}
-          >
-            {isFilterOpen ? '縮小篩選欄' : '展開篩選欄'}
-          </Button>
+          <Box display="flex" gap={2} mb={4}>
+            <Button
+              onClick={toggleFilter}
+              colorScheme="teal"
+              px={4}
+              size="lg"
+              borderRadius={'full'}
+              display={{ base: 'none', md: 'block' }}
+            >
+              {isFilterOpen ? '縮小篩選欄' : '展開篩選欄'}
+            </Button>
+            {hasActiveFilters && (
+              <Button
+                onClick={clearFilters}
+                colorScheme="gray"
+                variant="outline"
+                px={4}
+                size="lg"
+                borderRadius={'full'}
+              >
+                清除搜尋
+                <FaTimes />
+              </Button>
+            )}
+          </Box>
 
           <Box
             display={{ base: 'block', md: 'flex' }}
@@ -191,11 +366,11 @@ const WorksPage: React.FC = () => {
                 <WorkFilterFields
                   filmTypeOptions={filmTypeOptions}
                   glossEffectOptions={glossEffectOptions}
-                  filmBrandOptions={filmBrandOptions}
+                  filmBrandOptions={filmBrandOptionsMemo}
                   brightnessOptions={brightnessOptions}
-                  colorCategoryOptions={colorCategoryOptions}
-                  carModelOptions={carModelOptions}
-                  setFilters={setFilters}
+                  colorCategoryOptions={colorCategoryOptionsMemo}
+                  carModelOptions={carModelOptionsMemo}
+                  setFilters={handleFilterChange}
                   filters={filters}
                 />
               )}
@@ -218,11 +393,11 @@ const WorksPage: React.FC = () => {
                       <WorkFilterFields
                         filmTypeOptions={filmTypeOptions}
                         glossEffectOptions={glossEffectOptions}
-                        filmBrandOptions={filmBrandOptions}
+                        filmBrandOptions={filmBrandOptionsMemo}
                         brightnessOptions={brightnessOptions}
-                        colorCategoryOptions={colorCategoryOptions}
-                        carModelOptions={carModelOptions}
-                        setFilters={setFilters}
+                        colorCategoryOptions={colorCategoryOptionsMemo}
+                        carModelOptions={carModelOptionsMemo}
+                        setFilters={handleFilterChange}
                         filters={filters}
                       />
                     </Drawer.Body>
@@ -240,7 +415,25 @@ const WorksPage: React.FC = () => {
             </Box>
 
             {/* Right Car Models Display */}
-            <Box flex="1">
+            <Box flex="1" position="relative">
+              {isLoading && (
+                <Portal>
+                  <Box
+                    position="fixed"
+                    top="0"
+                    left="0"
+                    right="0"
+                    bottom="0"
+                    bg="rgba(0, 0, 0, 0.5)"
+                    zIndex="overlay"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Spinner size="xl" color="white" />
+                  </Box>
+                </Portal>
+              )}
               <Grid
                 templateColumns={{
                   base: 'repeat(2, 1fr)',

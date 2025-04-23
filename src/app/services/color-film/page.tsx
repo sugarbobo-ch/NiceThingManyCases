@@ -22,16 +22,9 @@ import {
   FaToolbox,
   FaRegClock,
 } from 'react-icons/fa';
-import { BreadcrumbNav } from '@/components/ui/breadcrumbNav';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import CardItem from '@/components/ui/cardItem';
 import kimImage from '/public/KIM7486_0.webp';
-
-const routeLabels = {
-  '/': '首頁',
-  '/services': '主要服務項目',
-  '/services/color-film': '改色膜',
-  '/services/color-wrap': '改色包膜',
-};
 
 export default function ColorWrapPage() {
   const bgColor = 'gray.50';
@@ -48,8 +41,12 @@ export default function ColorWrapPage() {
       bgSize="cover"
       bgPos="center"
     >
-      {/* 麵包屑導航 */}
-      <BreadcrumbNav routeLabels={routeLabels} />
+      <Breadcrumb
+        items={[
+          { label: '首頁', href: '/' },
+          { label: '主要服務項目 - 改色膜', href: '/services/color-film' },
+        ]}
+      />
 
       <Container py={8} px={4} margin={'auto'}>
         <Heading as="h1" size="3xl" mb={2} color="white">

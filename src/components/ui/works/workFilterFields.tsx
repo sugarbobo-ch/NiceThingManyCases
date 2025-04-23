@@ -100,7 +100,8 @@ const WorkFilterFields = ({
           <Accordion.ItemContent>
             <Accordion.ItemBody>
               <RadioGroup.Root
-                defaultValue="all"
+                value={filters.filmType}
+                defaultValue={filters.filmType}
                 onValueChange={(details) => setSelectedFilmType(details.value)}
                 _hover={{ cursor: 'pointer' }}
               >

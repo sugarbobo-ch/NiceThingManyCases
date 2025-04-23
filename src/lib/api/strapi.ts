@@ -6,6 +6,10 @@ import {
   FAQResponse,
   WorkModelResponse,
   FilmBrandResponse,
+  ColorCategoryResponse,
+  CarModelResponse,
+  CarModel,
+  ColorCategory,
 } from '@/types/strapi';
 import { FiltersType } from '@/app/works/page';
 
@@ -135,16 +139,16 @@ export async function fetchWorks(
               ? { $in: filters.glossEffect }
               : undefined,
             filmBrand: filters.filmBrand?.length
-              ? { $in: filters.filmBrand }
+              ? { name: { $in: filters.filmBrand } }
               : undefined,
             brightness: filters.brightness?.length
               ? { $in: filters.brightness }
               : undefined,
-            colorCategories: filters.colorCategory?.length
-              ? { $in: filters.colorCategory }
+            colorCategories: filters.colorCategory.length
+              ? { name: { $in: filters.colorCategory } }
               : undefined,
             carModel: filters.carModel?.length
-              ? { $in: filters.carModel }
+              ? { name: { $in: filters.carModel } }
               : undefined,
           },
         },
@@ -189,4 +193,18 @@ export async function fetchWorkBySlug(
     console.error(`Error fetching work with slug ${slug}:`, error);
     throw error;
   }
+}
+
+// Function to fetch color categories
+export async function fetchColorCategories(): Promise<ColorCategoryResponse> {
+  return fetchFromStrapi<ColorCategory>('color-categories', {
+    populate: '*',
+  });
+}
+
+// Function to fetch car models
+export async function fetchCarModels(): Promise<CarModelResponse> {
+  return fetchFromStrapi<CarModel>('car-models', {
+    populate: '*',
+  });
 }

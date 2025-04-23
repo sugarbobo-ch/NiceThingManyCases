@@ -18,7 +18,6 @@ const MasonryGallery: React.FC<MasonryGalleryProps> = ({ works }) => {
   const [selectedWorkIndex, setSelectedWorkIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // 響應式設計 - 根據螢幕大小決定列數
   const columns =
     useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }) || 3;
 

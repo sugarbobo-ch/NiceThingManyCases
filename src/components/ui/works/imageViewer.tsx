@@ -14,6 +14,14 @@ import {
 } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight, LuInfo } from 'react-icons/lu';
 import { WorkModel } from '@/types/strapi';
+import {
+  FilmType,
+  filmTypeMap,
+  GlossEffectType,
+  finishTypeMap,
+  BrightnessType,
+  brightnessMap,
+} from '@/app/works/[slug]/page';
 
 interface ImageViewerProps {
   isOpen: boolean;
@@ -209,41 +217,49 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
                     p={4}
                     color="white"
                   >
-                    <Text fontSize="xl" fontWeight="bold" mb={1}>
+                    <Text fontSize="xl" fontWeight="bold" mb={2}>
                       {currentWork.name}
                     </Text>
                     <Flex wrap="wrap" gap={2} mb={2}>
                       {currentWork.filmType && (
                         <Text
                           fontSize="sm"
-                          bg="blackAlpha.300"
+                          bg="whiteAlpha.300"
                           px={2}
                           py={1}
                           borderRadius="md"
                         >
-                          {currentWork.filmType}
+                          {filmTypeMap[currentWork.filmType as FilmType]}
                         </Text>
                       )}
                       {currentWork.glossEffect && (
                         <Text
                           fontSize="sm"
-                          bg="blackAlpha.300"
+                          bg="whiteAlpha.300"
                           px={2}
                           py={1}
                           borderRadius="md"
                         >
-                          {currentWork.glossEffect}
+                          {
+                            finishTypeMap[
+                              currentWork.glossEffect as GlossEffectType
+                            ]
+                          }
                         </Text>
                       )}
                       {currentWork.brightness && (
                         <Text
                           fontSize="sm"
-                          bg="blackAlpha.300"
+                          bg="whiteAlpha.300"
                           px={2}
                           py={1}
                           borderRadius="md"
                         >
-                          {currentWork.brightness}
+                          {
+                            brightnessMap[
+                              currentWork.brightness as BrightnessType
+                            ]
+                          }
                         </Text>
                       )}
                     </Flex>
@@ -295,7 +311,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
               <IconButton
                 size={buttonSize}
                 variant="ghost"
-                aria-label="顯示信息"
+                aria-label="顯示資訊"
                 position="absolute"
                 top={2}
                 right={{ base: 16, md: 20 }}

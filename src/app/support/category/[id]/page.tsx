@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useFAQsByCategory } from '@/hooks/useFAQData';
 import { usePathname, useRouter } from 'next/navigation';
-import BreadcrumbNav from '@/components/ui/breadcrumbNav';
+import Breadcrumb from '@/components/ui/breadcrumb';
 
 interface CategoryDetailPageProps {
   params: Promise<{
@@ -34,10 +34,15 @@ const CategoryDetailPage: React.FC<CategoryDetailPageProps> = ({ params }) => {
 
   return (
     <Box>
-      <BreadcrumbNav
-        routeLabels={
-          faqs.length > 0 ? { [pathname]: faqs[0].category.title } : {}
-        }
+      <Breadcrumb
+        items={[
+          { label: '首頁', href: '/' },
+          { label: '常見QA', href: '/support' },
+          {
+            label: faqs.length > 0 ? faqs[0].category.title : '類別',
+            href: pathname,
+          },
+        ]}
       />
       <Container py={{ base: 4, lg: 8 }} px={4} margin={'auto'}>
         <Button
